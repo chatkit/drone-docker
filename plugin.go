@@ -111,8 +111,6 @@ func (p Plugin) Exec() error {
 	addProxyBuildArgs(&p.Build)
 
 	var cmds []*exec.Cmd
-	cmds = append(cmds, commandVersion()) // docker version
-	cmds = append(cmds, commandInfo())    // docker info
 	if p.Build.Prune {
 		cmds = append(cmds, commandDockerPrune()) // cleanup docker
 	}
@@ -130,7 +128,7 @@ func (p Plugin) Exec() error {
 	for _, cmd := range cmds {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		trace(cmd)
+		// trace(cmd)
 
 		err := cmd.Run()
 		if err != nil {
