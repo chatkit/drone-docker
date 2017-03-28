@@ -9,6 +9,20 @@ Drone plugin can be used to build and publish Docker images to a container
 registry. For the usage information and a listing of the available options
 please take a look at [the docs](http://plugins.drone.io/drone-plugins/drone-docker/).
 
+Note: This is a fork of the original plugin by Drone. It adds the prune flag that allows you
+to disable the prune functionality. Example usage:
+
+```
+pipeline:
+  build:
+    image: themaz/drone-docker
+    repo: <your repo>
+    registry: <your registry>
+    username: ${REGISTRY_USERNAME}
+    password: ${REGISTRY_PASSWORD}
+    prune: false
+```
+
 ## Build
 
 Build the binary with the following commands:

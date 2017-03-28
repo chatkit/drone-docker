@@ -118,10 +118,15 @@ func main() {
 			Usage:  "squash the layers at build time",
 			EnvVar: "PLUGIN_SQUASH",
 		},
-		cli.BoolTFlag{
+		cli.BoolFlag{
 			Name:   "pull-image",
 			Usage:  "force pull base image at build time",
 			EnvVar: "PLUGIN_PULL_IMAGE",
+		},
+		cli.BoolFlag{
+			Name:   "prune",
+			Usage:  "prune the system before run",
+			EnvVar: "PLUGIN_SYSTEM_PRUNE",
 		},
 		cli.BoolFlag{
 			Name:   "compress",
@@ -178,6 +183,7 @@ func run(c *cli.Context) error {
 			Args:       c.StringSlice("args"),
 			Squash:     c.Bool("squash"),
 			Pull:       c.BoolT("pull-image"),
+			Prune:      c.BoolT("prune"),
 			Compress:   c.Bool("compress"),
 			Repo:       c.String("repo"),
 		},

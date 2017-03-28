@@ -50,6 +50,7 @@ type (
 		Pull       bool     // Docker build pull
 		Compress   bool     // Docker build compress
 		Repo       string   // Docker build repository
+		Prune      bool     // Docker system prune
 	}
 
 	// Plugin defines the Docker plugin parameters.
@@ -110,9 +111,11 @@ func (p Plugin) Exec() error {
 	addProxyBuildArgs(&p.Build)
 
 	var cmds []*exec.Cmd
-	cmds = append(cmds, commandVersion())      // docker version
-	cmds = append(cmds, commandInfo())         // docker info
-	cmds = append(cmds, commandDockerPrune())  // cleanup docker
+	cmds = append(cmds, commandVersion()) // docker version
+	cmds = append(cmds, commandInfo())    // docker info
+	if p.Build.Prune {
+		cmds = append(cmds, commandDockerPrune()) // cleanup docker
+	}
 	cmds = append(cmds, commandBuild(p.Build)) // docker build
 
 	for _, tag := range p.Build.Tags {
