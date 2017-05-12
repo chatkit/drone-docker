@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -116,7 +117,13 @@ func (p Plugin) Exec() error {
 	}
 	cmds = append(cmds, commandBuild(p.Build)) // docker build
 
+	reg, err := regexp.Compile("[^a-zA-Z0-9\\-_]+")
+	if err != nil {
+		return err
+	}
+
 	for _, tag := range p.Build.Tags {
+		tag = reg.ReplaceAllString(tag, "-")          // replace all non-alphanumeric chars with "-"
 		cmds = append(cmds, commandTag(p.Build, tag)) // docker tag
 
 		if p.Dryrun == false {
