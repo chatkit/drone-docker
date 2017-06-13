@@ -117,7 +117,7 @@ func (p Plugin) Exec() error {
 	}
 	cmds = append(cmds, commandBuild(p.Build)) // docker build
 
-	reg, err := regexp.Compile("[^a-zA-Z0-9\\-_]+")
+	reg, err := regexp.Compile("[^a-zA-Z0-9\\-_.]+")
 	if err != nil {
 		return err
 	}
