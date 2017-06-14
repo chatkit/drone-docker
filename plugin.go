@@ -42,16 +42,17 @@ type (
 
 	// Build defines Docker build parameters.
 	Build struct {
-		Name       string   // Docker build using default named tag
-		Dockerfile string   // Docker build Dockerfile
-		Context    string   // Docker build context
-		Tags       []string // Docker build tags
-		Args       []string // Docker build args
-		Squash     bool     // Docker build squash
-		Pull       bool     // Docker build pull
-		Compress   bool     // Docker build compress
-		Repo       string   // Docker build repository
-		Prune      bool     // Docker system prune
+		Name               string   // Docker build using default named tag
+		Dockerfile         string   // Docker build Dockerfile
+		Context            string   // Docker build context
+		Tags               []string // Docker build tags
+		Args               []string // Docker build args
+		Squash             bool     // Docker build squash
+		Pull               bool     // Docker build pull
+		Compress           bool     // Docker build compress
+		Repo               string   // Docker build repository
+		Prune              bool     // Docker system prune
+		SendAWSCredsAsArgs bool     // If AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are present as env vars, they're passed into Docker build as args
 	}
 
 	// Plugin defines the Docker plugin parameters.
@@ -203,6 +204,11 @@ func commandBuild(build Build) *exec.Cmd {
 	}
 	for _, arg := range build.Args {
 		args = append(args, "--build-arg", arg)
+	}
+
+	if build.SendAWSCredsAsArgs {
+		args = append(args, "--build-arg", fmt.Sprintf("AWS_ACCESS_KEY_ID=%s", os.Getenv("AWS_ACCESS_KEY_ID")))
+		args = append(args, "--build-arg", fmt.Sprintf("AWS_SECRET_ACCESS_KEY=%s", os.Getenv("AWS_SECRET_ACCESS_KEY")))
 	}
 
 	return exec.Command(dockerExe, args...)
