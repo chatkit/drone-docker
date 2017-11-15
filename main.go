@@ -113,6 +113,11 @@ func main() {
 			Usage:  "build args",
 			EnvVar: "PLUGIN_BUILD_ARGS",
 		},
+		cli.StringSliceFlag{
+			Name:   "labels",
+			Usage:  "build labels",
+			EnvVar: "PLUGIN_BUILD_LABELS",
+		},
 		cli.BoolFlag{
 			Name:   "squash",
 			Usage:  "squash the layers at build time",
@@ -192,6 +197,7 @@ func run(c *cli.Context) error {
 			Compress:           c.Bool("compress"),
 			Repo:               c.String("repo"),
 			SendAWSCredsAsArgs: c.BoolT("sendawscreds"),
+			Labels:             c.StringSlice("labels"),
 		},
 		Daemon: Daemon{
 			Registry:      c.String("docker.registry"),
