@@ -53,6 +53,7 @@ type (
 		Repo               string   // Docker build repository
 		Prune              bool     // Docker system prune
 		SendAWSCredsAsArgs bool     // If AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are present as env vars, they're passed into Docker build as args
+		Labels             []string // Docker build labels
 	}
 
 	// Plugin defines the Docker plugin parameters.
@@ -201,6 +202,9 @@ func commandBuild(build Build) *exec.Cmd {
 	}
 	if build.Pull {
 		args = append(args, "--pull=true")
+	}
+	for _, label := range build.Labels {
+		args = append(args, "--label", label)
 	}
 	for _, arg := range build.Args {
 		args = append(args, "--build-arg", arg)
