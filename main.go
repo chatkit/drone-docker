@@ -134,6 +134,21 @@ func main() {
 			EnvVar: "PLUGIN_SYSTEM_PRUNE",
 		},
 		cli.BoolFlag{
+			Name:   "prune-no-force",
+			Usage:  "remove force flag from prune command",
+			EnvVar: "PLUGIN_SYSTEM_PRUNE_NO_FORCE",
+		},
+		cli.BoolFlag{
+			Name:   "prune-dangling-only",
+			Usage:  "only prune dangling images",
+			EnvVar: "PLUGIN_SYSTEM_PRUNE_DANGLING_ONLY",
+		},
+		cli.StringSliceFlag{
+			Name:   "prune-filters",
+			Usage:  "filters to use when running prune",
+			EnvVar: "PLUGIN_SYSTEM_PRUNE_FILTERS",
+		},
+		cli.BoolFlag{
 			Name:   "sendawscreds",
 			Usage:  "send aws creds as args into docker build if passed in env",
 			EnvVar: "PLUGIN_SEND_AWS_CREDS",
@@ -193,7 +208,6 @@ func run(c *cli.Context) error {
 			Args:               c.StringSlice("args"),
 			Squash:             c.Bool("squash"),
 			Pull:               c.BoolT("pull-image"),
-			Prune:              c.BoolT("prune"),
 			Compress:           c.Bool("compress"),
 			Repo:               c.String("repo"),
 			SendAWSCredsAsArgs: c.BoolT("sendawscreds"),
@@ -212,6 +226,12 @@ func run(c *cli.Context) error {
 			DNS:           c.StringSlice("daemon.dns"),
 			MTU:           c.String("daemon.mtu"),
 			Experimental:  c.Bool("daemon.experimental"),
+		},
+		Prune: Prune{
+			Enable:   c.BoolT("prune"),
+			NoForce:  c.BoolT("prune-no-force"),
+			Filters:  c.StringSlice("prune-filters"),
+			Dangling: c.BoolT("prune-dangling-only"),
 		},
 	}
 

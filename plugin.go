@@ -61,7 +61,15 @@ type (
 		Login  Login  // Docker login configuration
 		Build  Build  // Docker build configuration
 		Daemon Daemon // Docker daemon configuration
+		Prune  Prune  // Docker prune configuration
 		Dryrun bool   // Docker push is skipped
+	}
+
+	Prune struct {
+		Enable   bool     // Enable docker prune
+		NoForce  bool     // Docker prune no force flag
+		Filters  []string // Docker prune filters
+		Dangling bool     // Only prune dangling
 	}
 )
 
@@ -114,8 +122,8 @@ func (p Plugin) Exec() error {
 	addProxyBuildArgs(&p.Build)
 
 	var cmds []*exec.Cmd
-	if p.Build.Prune {
-		cmds = append(cmds, commandDockerPrune()) // cleanup docker
+	if p.Prune.Enable {
+		cmds = append(cmds, commandDockerPrune(p.Prune)) // cleanup docker
 	}
 	cmds = append(cmds, commandBuild(p.Build)) // docker build
 
@@ -203,9 +211,6 @@ func commandBuild(build Build) *exec.Cmd {
 	if build.Pull {
 		args = append(args, "--pull=true")
 	}
-	for _, label := range build.Labels {
-		args = append(args, "--label", label)
-	}
 	for _, arg := range build.Args {
 		args = append(args, "--build-arg", arg)
 	}
@@ -213,6 +218,9 @@ func commandBuild(build Build) *exec.Cmd {
 	if build.SendAWSCredsAsArgs {
 		args = append(args, "--build-arg", fmt.Sprintf("AWS_ACCESS_KEY_ID=%s", os.Getenv("AWS_ACCESS_KEY_ID")))
 		args = append(args, "--build-arg", fmt.Sprintf("AWS_SECRET_ACCESS_KEY=%s", os.Getenv("AWS_SECRET_ACCESS_KEY")))
+	}
+	for _, label := range build.Labels {
+		args = append(args, "--label", label)
 	}
 
 	return exec.Command(dockerExe, args...)
@@ -309,8 +317,20 @@ func commandDaemon(daemon Daemon) *exec.Cmd {
 	return exec.Command(dockerdExe, args...)
 }
 
-func commandDockerPrune() *exec.Cmd {
-	return exec.Command(dockerExe, "system", "prune", "-f")
+func commandDockerPrune(prune Prune) *exec.Cmd {
+	args := []string{"system", "prune"}
+	if !prune.Dangling {
+		args = append(args, "-a")
+	}
+	if !prune.NoForce {
+		args = append(args, "-f")
+	}
+
+	for _, filter := range prune.Filters {
+		args = append(args, "--filter", filter)
+	}
+
+	return exec.Command(dockerExe, args...)
 }
 
 // trace writes each command to stdout with the command wrapped in an xml
