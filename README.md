@@ -15,7 +15,7 @@ to disable the prune functionality. Example usage:
 ```
 pipeline:
   build:
-    image: themaz/drone-docker
+    image: chatkitinc/drone-docker
     repo: <your repo>
     registry: <your registry>
     username: ${REGISTRY_USERNAME}
@@ -38,7 +38,7 @@ Build the docker image with the following commands:
 
 ```
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo
-docker build --rm=true -t plugins/docker .
+docker build --rm=true -t chatkitinc/drone-docker .
 ```
 
 Please note incorrectly building the image for the correct x64 linux and with
@@ -61,5 +61,5 @@ docker run --rm \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
   --privileged \
-  plugins/docker --dry-run
+  chatkitinc/drone-docker --dry-run
 ```
