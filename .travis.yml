@@ -3,14 +3,14 @@ sudo: required
 services:
   - docker
 go:
-  - 1.8.1
+  - 1.10.3
 script:
   - go build -ldflags "-s -w -X main.build=$TRAVIS_BUILD_NUMBER" -a -tags netgo
-  - docker build -t themaz/drone-docker .
+  - docker build -t chatkitinc/drone-docker .
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push themaz/drone-docker;
-    docker tag themaz/drone-docker themaz/drone-docker:0.1.$TRAVIS_BUILD_NUMBER;
-    docker push themaz/drone-docker:0.1.$TRAVIS_BUILD_NUMBER;
+    docker push chatkitinc/drone-docker;
+    docker tag chatkitinc/drone-docker chatkitinc/drone-docker:0.1.$TRAVIS_BUILD_NUMBER;
+    docker push chatkitinc/drone-docker:0.1.$TRAVIS_BUILD_NUMBER;
     fi
